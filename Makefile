@@ -1,4 +1,4 @@
-.PHONY: clean down fresh perms rmq-perms up
+.PHONY: clean down perms rmq-perms run start
 
 NAME ?= rabbitmq-server-7253
 
@@ -10,13 +10,14 @@ clean: down perms
 down:
 	docker stop $(NAME)
 
-fresh: down clean up
-
 perms:
 	sudo chown -R "$(USER):$(USER)" $(CURDIR)
 
 rmq-perms:
 	sudo chown -R "999:999" $(CURDIR)/rabbitmq
 
-up: rmq-perms
+start: rmq-perms
+	docker start $(NAME)
+
+run: rmq-perms
 	docker run --name $(NAME) --mount type=bind,source="$(CURDIR)/rabbitmq",target=/var/lib/rabbitmq rabbitmq:latest
